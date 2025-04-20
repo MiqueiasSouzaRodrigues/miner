@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Gold | Premium Mining Game</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <div id="game-container">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen">
+            <div class="coin-balance">1000</div>
+            <h1 class="game-logo">DEEP GOLD</h1>
+            <p class="game-subtitle">Procure riquezas, mas cuidado com o perigo!</p>
+            <button id="play-btn" class="btn-play">PLAY</button>
+        </div>
+
+        <!-- Betting Screen -->
+        <div id="betting-screen" class="screen hidden">
+            <div class="coin-balance">1000</div>
+            <h2 class="betting-title">FAÇA SUA APOSTA</h2>
+            <p class="betting-subtitle">Selecione o valor da sua aposta</p>
+            
+            <div class="bet-amounts">
+                <button class="bet-btn" data-amount="10">
+                    <span class="bet-icon">💰</span>
+                    <span>10</span>
+                </button>
+                <button class="bet-btn" data-amount="50">
+                    <span class="bet-icon">💰</span>
+                    <span>50</span>
+                </button>
+                <button class="bet-btn" data-amount="100">
+                    <span class="bet-icon">💰</span>
+                    <span>100</span>
+                </button>
+                <button class="bet-btn" data-amount="200">
+                    <span class="bet-icon">💰</span>
+                    <span>200</span>
+                </button>
+                <button class="bet-btn" data-amount="500">
+                    <span class="bet-icon">💰</span>
+                    <span>500</span>
+                </button>
+                <button class="bet-btn" data-amount="1000">
+                    <span class="bet-icon">💰</span>
+                    <span>1000</span>
+                </button>
+            </div>
+            
+            <button id="start-digging-btn" class="btn-start-digging">
+                COMECE A CAVAR
+            </button>
+        </div>
+
+        <!-- Mining Screen -->
+        <div id="mining-screen" class="screen hidden">
+            <div class="coin-balance">1000</div>
+            
+            <div class="mine-display" id="mine-shaft"></div>
+            
+            <div class="mining-controls">
+                <div class="multiplier-display" id="multiplier-display">x1.0</div>
+                
+                <div class="risk-meter">
+                    <div class="risk-label">
+                        <span>SEGURO</span>
+                        <span>PERIGO!</span>
+                    </div>
+                    <div class="risk-bar-container">
+                        <div class="risk-bar" id="risk-bar"></div>
+                    </div>
+                </div>
+                
+                <button id="dig-btn" class="btn-dig">ESCAVAÇÃO</button>
+                <button id="cash-out-btn" class="btn-cash-out">SACAR</button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="screen hidden">
+            <div class="coin-balance">1000</div>
+            
+            <div class="result-content">
+                <div class="result-icon" id="result-icon">💰</div>
+                <h2 class="result-message" id="result-message">VITÓRIA!</h2>
+                <p class="result-earnings" id="result-earnings">Você ganhou: 200 moedas (x2.0)</p>
+                
+                <div class="result-buttons">
+                    <button id="play-again-btn" class="result-btn btn-play-again">JOGUE NOVAMENTE</button>
+                    <button id="back-btn" class="result-btn btn-back">VOLTAR</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js">
+    </script>
+</body>
+</html>

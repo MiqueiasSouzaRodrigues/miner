@@ -1,0 +1,602 @@
+        /* ===== BASE STYLES ===== */
+        :root {
+            --gold: #FFD700;
+            --gold-light: #FFECB3;
+            --gold-dark: #FFA000;
+            --red: #FF3D00;
+            --red-dark: #D32F2F;
+            --black: #121212;
+            --black-light: #1E1E1E;
+            --white: #FFFFFF;
+            --green: #4CAF50;
+            --green-dark: #2E7D32;
+            --blue: #2196F3;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: var(--black);
+            color: var(--white);
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        #game-container {
+            width: 100%;
+            max-width: 450px;
+            height: 100%;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #2A2A2A 0%, #121212 100%);
+            box-shadow: var(--shadow);
+        }
+
+        /* ===== SCREEN COMMON STYLES ===== */
+        .screen {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="none" stroke="%23FFD700" stroke-width="0.5" stroke-dasharray="5,5" opacity="0.1"/></svg>');
+        }
+
+        .screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+
+        .coin-balance {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 15px;
+            border-radius: 50px;
+            border: 2px solid var(--gold);
+            font-weight: bold;
+            color: var(--gold);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .coin-balance::before {
+            content: '💰';
+        }
+
+        /* ===== START SCREEN ===== */
+        #start-screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.9) 0%, rgba(22, 33, 62, 0.9) 100%), 
+                        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><path d="M30,50 Q50,30 70,50 Q50,70 30,50 Z" fill="%23FFD700" opacity="0.1"/></svg>');
+        }
+
+        .game-logo {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 40px;
+            color: var(--gold);
+            text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+            position: relative;
+            animation: logoGlow 2s infinite alternate;
+        }
+
+        .game-logo::after {
+            content: '💰';
+            position: absolute;
+            right: -30px;
+            top: -20px;
+            font-size: 2rem;
+            animation: coinFloat 3s infinite ease-in-out;
+        }
+
+        .game-subtitle {
+            font-size: 1.2rem;
+            color: var(--gold-light);
+            margin-bottom: 60px;
+            opacity: 0.8;
+        }
+
+        .btn-play {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            padding: 18px 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 50px;
+            color: var(--black);
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .btn-play:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn-play:active {
+            transform: translateY(1px);
+        }
+
+        .btn-play::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: -1;
+        }
+
+        .btn-play:hover::before {
+            opacity: 1;
+        }
+
+        /* ===== BETTING SCREEN ===== */
+        #betting-screen {
+            justify-content: center;
+            gap: 30px;
+            background: linear-gradient(135deg, rgba(40, 40, 60, 0.9) 0%, rgba(30, 30, 50, 0.9) 100%);
+        }
+
+        .betting-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2rem;
+            color: var(--gold);
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .betting-subtitle {
+            text-align: center;
+            color: var(--gold-light);
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+
+        .bet-amounts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .bet-btn {
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid var(--gold);
+            color: var(--gold-light);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bet-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .bet-btn.selected {
+            background: var(--gold);
+            color: var(--black);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .bet-btn.selected::after {
+            content: '✓';
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 1rem;
+            color: var(--black);
+        }
+
+        .bet-btn .bet-icon {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .btn-start-digging {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            padding: 18px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 50px;
+            color: var(--black);
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-start-digging:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn-start-digging:active {
+            transform: translateY(1px);
+        }
+
+        /* ===== MINING SCREEN ===== */
+        #mining-screen {
+            justify-content: space-between;
+            background: linear-gradient(135deg, rgba(30, 30, 40, 0.9) 0%, rgba(20, 20, 30, 0.9) 100%);
+        }
+
+        .mine-display {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .multiplier-display {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--gold);
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+            margin: 20px 0;
+            text-align: center;
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        .risk-meter {
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .risk-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--gold-light);
+        }
+
+        .risk-bar-container {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .risk-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--green) 0%, var(--gold) 50%, var(--red) 100%);
+            border-radius: 8px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .risk-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, 
+                          rgba(255, 255, 255, 0.1) 0%, 
+                          rgba(255, 255, 255, 0.3) 50%, 
+                          transparent 100%);
+            animation: riskBarShine 2s infinite;
+        }
+
+        .mining-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .btn-dig {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            border: none;
+            padding: 20px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            border-radius: 15px;
+            color: var(--black);
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.4);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-dig:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn-dig:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-dig::before {
+            content: '⛏️';
+            font-size: 1.8rem;
+            animation: pickaxeSwing 0.5s infinite alternate;
+        }
+
+        .btn-cash-out {
+            background: linear-gradient(135deg, var(--green) 0%, var(--green-dark) 100%);
+            border: none;
+            padding: 18px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border-radius: 15px;
+            color: var(--white);
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+            transition: var(--transition);
+            animation: pulseGlow 2s infinite;
+        }
+
+        .btn-cash-out:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(76, 175, 80, 0.6);
+        }
+
+        .btn-cash-out:active {
+            transform: translateY(1px);
+        }
+
+        /* Mine Blocks Animation */
+        .mine-block {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            border-radius: 10px;
+            margin: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .mine-block.coin {
+            background: rgba(255, 215, 0, 0.2);
+            color: var(--gold);
+        }
+
+        .mine-block.bomb {
+            background: rgba(255, 61, 0, 0.2);
+            color: var(--red);
+        }
+
+        /* ===== RESULT SCREEN ===== */
+        #result-screen {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(30, 30, 40, 0.95) 0%, rgba(20, 20, 30, 0.95) 100%);
+        }
+
+        .result-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            max-width: 300px;
+        }
+
+        .result-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: bounceIn 0.8s;
+        }
+
+        .result-message {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--white) 100%);
+            -webkit-text-fill-color: transparent;
+        }
+
+        .result-message.lost {
+            background: linear-gradient(135deg, var(--red) 0%, var(--gold) 100%);
+        }
+
+        .result-earnings {
+            font-size: 1.5rem;
+            color: var(--gold-light);
+            margin-bottom: 30px;
+        }
+
+        .result-buttons {
+            display: flex;
+            gap: 15px;
+            width: 100%;
+        }
+
+        .result-btn {
+            flex: 1;
+            padding: 15px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-play-again {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: var(--black);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .btn-play-again:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.6);
+        }
+
+        .btn-back {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--white);
+            border: 2px solid var(--gold);
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 215, 0, 0.1);
+            transform: translateY(-3px);
+        }
+
+        /* ===== ANIMATIONS ===== */
+        @keyframes logoGlow {
+            0% { text-shadow: 0 0 15px rgba(255, 215, 0, 0.7); }
+            100% { text-shadow: 0 0 25px rgba(255, 215, 0, 1); }
+        }
+
+        @keyframes coinFloat {
+            0%, 100% { transform: translateY(0) rotate(-10deg); }
+            50% { transform: translateY(-15px) rotate(10deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(76, 175, 80, 0.8); }
+            100% { box-shadow: 0 0 10px rgba(76, 175, 80, 0.4); }
+        }
+
+        @keyframes riskBarShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes pickaxeSwing {
+            0% { transform: rotate(-20deg); }
+            100% { transform: rotate(20deg); }
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0.1); opacity: 0; }
+            60% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes coinBurst {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        @keyframes explosion {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        /* Coin particles animation */
+        .coin-particle {
+            position: absolute;
+            font-size: 1.5rem;
+            animation: coinParticle 1s forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes coinParticle {
+            0% { transform: translate(0, 0) scale(1); opacity: 1; }
+            100% { transform: translate(var(--tx), var(--ty)) scale(0); opacity: 0; }
+        }
+
+        /* ===== RESPONSIVE DESIGN ===== */
+        @media (max-width: 400px) {
+            .game-logo {
+                font-size: 3rem;
+            }
+            
+            .btn-play, .btn-start-digging, .btn-dig, .btn-cash-out {
+                padding: 15px 30px;
+                font-size: 1.2rem;
+            }
+            
+            .multiplier-display {
+                font-size: 2.5rem;
+            }
+            
+            .result-message {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .game-logo {
+                font-size: 3rem;
+                margin-bottom: 20px;
+            }
+            
+            .game-subtitle {
+                margin-bottom: 30px;
+            }
+            
+            .betting-title {
+                font-size: 1.8rem;
+            }
+        }

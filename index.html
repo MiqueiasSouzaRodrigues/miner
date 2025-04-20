@@ -3,101 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deep Gold | Premium Mining Game</title>
+    <title>Deep Gold</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;900&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
 </head>
 <body>
     <div id="game-container">
+        <!-- Background elements -->
+        <div class="cave-veins"></div>
+        
         <!-- Start Screen -->
         <div id="start-screen" class="screen">
+            <h1 id="game-logo">Deep Gold</h1>
+            <button id="play-btn">Play</button>
             <div class="coin-balance">1000</div>
-            <h1 class="game-logo">DEEP GOLD</h1>
-            <p class="game-subtitle">Procure riquezas, mas cuidado com o perigo!</p>
-            <button id="play-btn" class="btn-play">PLAY</button>
         </div>
 
         <!-- Betting Screen -->
-        <div id="betting-screen" class="screen hidden">
-            <div class="coin-balance">1000</div>
-            <h2 class="betting-title">FAÇA SUA APOSTA</h2>
-            <p class="betting-subtitle">Selecione o valor da sua aposta</p>
-            
-            <div class="bet-amounts">
-                <button class="bet-btn" data-amount="10">
-                    <span class="bet-icon">💰</span>
-                    <span>10</span>
+        <div id="betting-screen" class="screen">
+            <h2 class="bet-title">Place Your Bet</h2>
+            <div class="bet-amount-container">
+                <button class="bet-amount-btn" data-amount="10">
+                    10
+                    <span class="bet-bonus">+0%</span>
                 </button>
-                <button class="bet-btn" data-amount="50">
-                    <span class="bet-icon">💰</span>
-                    <span>50</span>
+                <button class="bet-amount-btn" data-amount="20">
+                    20
+                    <span class="bet-bonus">+5%</span>
                 </button>
-                <button class="bet-btn" data-amount="100">
-                    <span class="bet-icon">💰</span>
-                    <span>100</span>
+                <button class="bet-amount-btn" data-amount="50">
+                    50
+                    <span class="bet-bonus">+10%</span>
                 </button>
-                <button class="bet-btn" data-amount="200">
-                    <span class="bet-icon">💰</span>
-                    <span>200</span>
+                <button class="bet-amount-btn" data-amount="100">
+                    100
+                    <span class="bet-bonus">+15%</span>
                 </button>
-                <button class="bet-btn" data-amount="500">
-                    <span class="bet-icon">💰</span>
-                    <span>500</span>
-                </button>
-                <button class="bet-btn" data-amount="1000">
-                    <span class="bet-icon">💰</span>
-                    <span>1000</span>
+                <button class="bet-amount-btn" data-amount="200">
+                    200
+                    <span class="bet-bonus">+20%</span>
                 </button>
             </div>
-            
-            <button id="start-digging-btn" class="btn-start-digging">
-                COMECE A CAVAR
-            </button>
+            <button id="start-digging-btn">Start Digging</button>
+            <div class="coin-balance">1000</div>
         </div>
 
         <!-- Mining Screen -->
-        <div id="mining-screen" class="screen hidden">
-            <div class="coin-balance">1000</div>
-            
-            <div class="mine-display" id="mine-shaft"></div>
-            
-            <div class="mining-controls">
-                <div class="multiplier-display" id="multiplier-display">x1.0</div>
-                
-                <div class="risk-meter">
-                    <div class="risk-label">
-                        <span>SEGURO</span>
-                        <span>PERIGO!</span>
+        <div id="mining-screen" class="screen">
+            <div id="mine-header">
+                <div id="streak-counter">Streak: 0</div>
+                <div class="coin-balance">1000</div>
+            </div>
+            <div id="mine-shaft"></div>
+            <div id="mine-controls">
+                <div id="multiplier-container">
+                    <div id="multiplier-label">Multiplier</div>
+                    <div id="multiplier-display">x1.0</div>
+                    <div id="next-multiplier">Next: x1.2</div>
+                </div>
+                <div id="risk-container">
+                    <div id="risk-label">
+                        <span>Safe</span>
+                        <span>Danger</span>
                     </div>
-                    <div class="risk-bar-container">
-                        <div class="risk-bar" id="risk-bar"></div>
+                    <div id="risk-bar-container">
+                        <div id="risk-bar"></div>
+                        <div id="risk-sparkle"></div>
                     </div>
                 </div>
-                
-                <button id="dig-btn" class="btn-dig">ESCAVAÇÃO</button>
-                <button id="cash-out-btn" class="btn-cash-out">SACAR</button>
+                <div id="action-buttons">
+                    <button id="dig-btn">DIG</button>
+                    <button id="cash-out-btn">CASH OUT</button>
+                </div>
             </div>
         </div>
 
         <!-- Result Screen -->
-        <div id="result-screen" class="screen hidden">
-            <div class="coin-balance">1000</div>
-            
-            <div class="result-content">
-                <div class="result-icon" id="result-icon">💰</div>
-                <h2 class="result-message" id="result-message">VITÓRIA!</h2>
-                <p class="result-earnings" id="result-earnings">Você ganhou: 200 moedas (x2.0)</p>
-                
-                <div class="result-buttons">
-                    <button id="play-again-btn" class="result-btn btn-play-again">JOGUE NOVAMENTE</button>
-                    <button id="back-btn" class="result-btn btn-back">VOLTAR</button>
+        <div id="result-screen" class="screen">
+            <div id="result-message">Success!</div>
+            <div id="result-earnings">+150 coins (x1.5)</div>
+            <div id="result-bonus">2x streak bonus applied!</div>
+            <div class="result-buttons">
+                <button id="play-again-btn" class="result-btn">Play Again</button>
+                <button id="back-btn" class="result-btn">Back</button>
+            </div>
+        </div>
+
+        <!-- Daily Reward Popup -->
+        <div id="daily-popup" class="daily-popup" style="display: none;">
+            <div class="daily-popup-content">
+                <h2>Daily Reward</h2>
+                <p>Come back daily to claim bigger rewards!</p>
+                <div class="daily-rewards">
+                    <div class="daily-reward">
+                        <div class="reward-day claimed">1</div>
+                        <div class="reward-amount">50 coins</div>
+                    </div>
+                    <div class="daily-reward">
+                        <div class="reward-day claimed">2</div>
+                        <div class="reward-amount">100 coins</div>
+                    </div>
+                    <div class="daily-reward">
+                        <div class="reward-day today">3</div>
+                        <div class="reward-amount">200 coins</div>
+                    </div>
                 </div>
+                <button class="close-popup">Claim Reward</button>
             </div>
         </div>
     </div>
 
-    <script src="script.js">
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

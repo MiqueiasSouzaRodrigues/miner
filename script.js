@@ -166,11 +166,11 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Show result modal
         if (won) {
-            modalTitle.textContent = 'You Won!';
-            modalMessage.textContent = `You cashed out and won R$ ${(gameState.betAmount * gameState.multiplier).toFixed(2)}!`;
+            modalTitle.textContent = 'Você ganhou!';
+            modalMessage.textContent = `Você sacou e ganhou R$ ${(gameState.betAmount * gameState.multiplier).toFixed(2)}!`;
         } else {
             modalTitle.textContent = 'Game Over!';
-            modalMessage.textContent = 'You hit a bomb and lost your bet.';
+            modalMessage.textContent = 'Você acertou uma bomba e perdeu sua aposta.';
         }
         
         resultModal.style.display = 'flex';

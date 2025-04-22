@@ -1,35 +1,27 @@
 :root {
-    --bg-dark: #0F172A;
-    --bg-light: #1E293B;
-    --block-closed: #1E3A8A;
-    --block-diamond: #38BDF8;
-    --block-bomb: #DC2626;
-    --button-primary: #FBBF24;
-    --button-hover: #F59E0B;
-    --text-primary: #F8FAFC;
-    --text-secondary: #CBD5E1;
+    --bg-dark: #002245;
+    --grid-color: #0061A8;
+    --highlight: #FFC107;
+    --positive-btn: #00D27F;
+    --text-primary: #FFFFFF;
+    --text-secondary: #B3E5FC;
+    --danger: #FF5252;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, var(--bg-dark), var(--bg-light));
+    background-color: var(--bg-dark);
     color: var(--text-primary);
     min-height: 100vh;
-    margin: 0;
     padding: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-.game-container {
-    background-color: rgba(30, 41, 59, 0.8);
-    border-radius: 15px;
-    padding: 20px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    width: 100%;
-    max-width: 400px;
 }
 
 .header {
@@ -39,84 +31,97 @@ body {
     margin-bottom: 20px;
 }
 
-.title {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 0;
+.balance {
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
 }
 
-.settings-btn {
-    background: none;
+.game-container {
+    max-width: 400px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.btn {
     border: none;
-    color: var(--text-primary);
-    font-size: 20px;
+    border-radius: 8px;
+    padding: 12px;
+    font-weight: 600;
     cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary {
+    background-color: var(--highlight);
+    color: #000;
+}
+
+.btn-primary:hover {
+    background-color: #FFB300;
+}
+
+.btn-positive {
+    background-color: var(--positive-btn);
+    color: #000;
+}
+
+.btn-positive:hover {
+    background-color: #00BB72;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 .grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 20px;
 }
 
-.block {
+.cell {
     aspect-ratio: 1;
-    background-color: var(--block-closed);
-    border-radius: 8px;
+    background-color: var(--grid-color);
+    border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 24px;
     cursor: pointer;
-    transition: all 0.3s ease;
     user-select: none;
+    transition: all 0.3s;
 }
 
-.block:hover {
+.cell:hover {
     transform: scale(1.05);
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
 }
 
-.block.revealed {
-    background-color: var(--block-diamond);
+.cell.revealed {
+    background-color: rgba(255, 193, 7, 0.2);
 }
 
-.block.bomb {
-    background-color: var(--block-bomb);
+.cell.mine {
+    background-color: var(--danger);
 }
 
-.block.revealed, .block.bomb {
+.cell.revealed, .cell.mine {
     cursor: default;
-}
-
-.controls {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.btn {
-    background-color: var(--button-primary);
-    color: #000;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 15px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: flex;
-    align-items: center;
-    gap: 5px;
-}
-
-.btn:hover {
-    background-color: var(--button-hover);
-}
-
-.btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
 }
 
 .input-group {
@@ -125,30 +130,34 @@ body {
 
 .input-label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
     color: var(--text-secondary);
+    font-size: 14px;
 }
 
 .input-field {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     border-radius: 8px;
     border: none;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(0, 0, 0, 0.3);
     color: var(--text-primary);
+    font-weight: 500;
 }
 
-.value-display {
-    font-size: 24px;
-    font-weight: bold;
-    text-align: center;
-    margin: 20px 0;
+select.input-field {
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 20px;
 }
 
 .game-info {
     display: flex;
     justify-content: space-between;
-    margin-top: 10px;
+    margin-top: 15px;
+    font-size: 14px;
 }
 
 .info-item {
@@ -157,80 +166,137 @@ body {
     gap: 5px;
 }
 
-@keyframes reveal {
-    0% { transform: scale(0.8); opacity: 0; }
-    100% { transform: scale(1); opacity: 1; }
+.current-bet {
+    text-align: center;
+    margin: 15px 0;
+    font-weight: 600;
 }
 
-@keyframes explode {
+.auto-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--positive-btn);
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+@keyframes pulse {
     0% { transform: scale(1); }
-    50% { transform: scale(1.5); }
+    50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
 
 .reveal-animation {
-    animation: reveal 0.3s ease-out;
+    animation: fadeIn 0.3s ease-out;
 }
 
-.explode-animation {
-    animation: explode 0.5s ease-out;
+.shake-animation {
+    animation: shake 0.5s ease-out, pulse 0.3s ease-out 0.5s;
 }
 
-.star {
+.hit-counter {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: gold;
-    clip-path: polygon(
-        50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 
-        50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%
-    );
-    opacity: 0;
-    animation: star-fade 1s ease-out;
-}
-
-@keyframes star-fade {
-    0% { transform: scale(0); opacity: 0; }
-    50% { transform: scale(1.5); opacity: 1; }
-    100% { transform: scale(1); opacity: 0; }
-}
-
-.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    z-index: 100;
-    justify-content: center;
-    align-items: center;
-}
-
-.modal-content {
-    background-color: var(--bg-light);
-    padding: 20px;
-    border-radius: 10px;
-    max-width: 300px;
-    text-align: center;
-}
-
-.modal-title {
-    font-size: 24px;
-    margin-bottom: 15px;
-}
-
-.modal-message {
-    margin-bottom: 20px;
-}
-
-.modal-btn {
-    background-color: var(--button-primary);
+    top: -25px;
+    right: 0;
+    background-color: var(--highlight);
     color: #000;
-    border: none;
-    border-radius: 5px;
-    padding: 10px 20px;
-    font-weight: bold;
-    cursor: pointer;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #555;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+@media (max-width: 400px) {
+    .controls {
+        grid-template-columns: 1fr;
+    }
+    
+    .cell {
+        font-size: 20px;
+    }
 }

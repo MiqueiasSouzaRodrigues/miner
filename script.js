@@ -1,50 +1,108 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Game state
     const gameState = {
-        betAmount: 5.00,
+        balance: 100.00,
+        betAmount: 5,
         minesCount: 3,
         gridSize: 25,
-        revealedCount: 0,
-        gameActive: false,
+        hits: 0,
         multiplier: 1.0,
         minesPositions: [],
-        revealedPositions: []
+        revealedPositions: [],
+        gameActive: false,
+        autoPlay: false,
+        autoPlayInterval: null
     };
 
     // DOM elements
     const gameGrid = document.getElementById('game-grid');
-    const currentValueDisplay = document.getElementById('current-value');
+    const playerBalance = document.getElementById('player-balance');
     const randomBtn = document.getElementById('random-btn');
     const cashoutBtn = document.getElementById('cashout-btn');
+    const cashoutValue = document.getElementById('cashout-value');
     const betAmountInput = document.getElementById('bet-amount');
-    const minesCountInput = document.getElementById('mines-count');
-    const diamondsRemainingDisplay = document.getElementById('diamonds-remaining');
-    const minesRemainingDisplay = document.getElementById('mines-remaining');
-    const resultModal = document.getElementById('result-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalMessage = document.getElementById('modal-message');
-    const modalBtn = document.getElementById('modal-btn');
+    const minesCountSelect = document.getElementById('mines-count');
+    const betDisplay = document.getElementById('bet-display');
+    const hitsCountDisplay = document.getElementById('hits-count');
+    const minesCountDisplay = document.getElementById('mines-count-display');
+    const autoToggle = document.getElementById('auto-toggle');
+    const tooltip = document.querySelector('.tooltiptext');
 
-    // Initialize game grid
-    function initializeGrid() {
+    // Initialize game
+    function initGame() {
+        updateUI();
+        createGrid();
+        setupEventListeners();
+    }
+
+    // Create game grid
+    function createGrid() {
         gameGrid.innerHTML = '';
         for (let i = 0; i < gameState.gridSize; i++) {
-            const block = document.createElement('div');
-            block.className = 'block';
-            block.dataset.index = i;
-            block.addEventListener('click', handleBlockClick);
-            gameGrid.appendChild(block);
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.index = i;
+            gameGrid.appendChild(cell);
         }
     }
 
+    // Setup event listeners
+    function setupEventListeners() {
+        // Cell click
+        gameGrid.addEventListener('click', function(e) {
+            if (e.target.classList.contains('cell') && !e.target.classList.contains('revealed') && 
+                !e.target.classList.contains('mine') && gameState.gameActive) {
+                handleCellClick(e.target);
+            }
+        });
+
+        // Random button
+        randomBtn.addEventListener('click', function() {
+            if (gameState.gameActive) {
+                clickRandomCell();
+            }
+        });
+
+        // Cashout button
+        cashoutBtn.addEventListener('click', function() {
+            if (gameState.gameActive && gameState.hits > 0) {
+                cashOut();
+            }
+        });
+
+        // Bet amount input
+        betAmountInput.addEventListener('input', function() {
+            const value = parseInt(this.value);
+            if (value < 1) this.value = 1;
+            if (value > 50) this.value = 50;
+            gameState.betAmount = parseInt(this.value);
+            betDisplay.textContent = `R$ ${gameState.betAmount}`;
+        });
+
+        // Mines count select
+        minesCountSelect.addEventListener('change', function() {
+            gameState.minesCount = parseInt(this.value);
+            minesCountDisplay.textContent = gameState.minesCount;
+        });
+
+        // Auto play toggle
+        autoToggle.addEventListener('change', function() {
+            gameState.autoPlay = this.checked;
+            if (gameState.autoPlay && gameState.gameActive) {
+                startAutoPlay();
+            } else {
+                stopAutoPlay();
+            }
+        });
+    }
+
     // Start new game
-    function startNewGame() {
-        gameState.betAmount = parseFloat(betAmountInput.value);
-        gameState.minesCount = parseInt(minesCountInput.value);
-        gameState.revealedCount = 0;
-        gameState.gameActive = true;
+    function startGame() {
+        // Reset game state
+        gameState.hits = 0;
         gameState.multiplier = 1.0;
         gameState.revealedPositions = [];
+        gameState.gameActive = true;
         
         // Generate mines positions
         gameState.minesPositions = [];
@@ -55,159 +113,182 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
         
+        // Update UI
         updateUI();
-        initializeGrid();
+        createGrid();
         
-        // Enable/disable buttons
-        randomBtn.disabled = false;
-        cashoutBtn.disabled = false;
+        // Start auto play if enabled
+        if (gameState.autoPlay) {
+            startAutoPlay();
+        }
     }
 
-    // Handle block click
-    function handleBlockClick(e) {
-        if (!gameState.gameActive) return;
-        
-        const block = e.target;
-        const index = parseInt(block.dataset.index);
-        
-        // Don't allow clicking already revealed blocks
-        if (gameState.revealedPositions.includes(index)) return;
-        
+    // Handle cell click
+    function handleCellClick(cell) {
+        const index = parseInt(cell.dataset.index);
         gameState.revealedPositions.push(index);
         
         if (gameState.minesPositions.includes(index)) {
-            // Clicked on a bomb
-            revealBomb(block);
+            // Mine hit
+            revealMine(cell);
             endGame(false);
         } else {
-            // Clicked on a diamond
-            revealDiamond(block);
+            // Successful hit
+            revealDiamond(cell);
+            gameState.hits++;
             updateMultiplier();
             updateUI();
+            
+            // Continue auto play if enabled
+            if (gameState.autoPlay && gameState.gameActive) {
+                setTimeout(clickRandomCell, 800);
+            }
         }
     }
 
     // Reveal diamond
-    function revealDiamond(block) {
-        block.classList.add('revealed', 'reveal-animation');
-        block.innerHTML = '💎';
-        gameState.revealedCount++;
+    function revealDiamond(cell) {
+        cell.classList.add('revealed', 'reveal-animation');
+        cell.innerHTML = '⭐';
         
-        // Create star effect
-        createStarEffect(block);
+        // Add hit counter
+        const counter = document.createElement('div');
+        counter.className = 'hit-counter';
+        counter.textContent = gameState.hits + 1;
+        cell.appendChild(counter);
     }
 
-    // Reveal bomb
-    function revealBomb(block) {
-        block.classList.add('bomb', 'explode-animation');
-        block.innerHTML = '💣';
+    // Reveal mine
+    function revealMine(cell) {
+        cell.classList.add('mine', 'shake-animation');
+        cell.innerHTML = '💣';
         
-        // Reveal all bombs at the end
+        // Reveal all mines at the end
         setTimeout(() => {
             gameState.minesPositions.forEach(pos => {
-                const bombBlock = document.querySelector(`.block[data-index="${pos}"]`);
+                const mineCell = document.querySelector(`.cell[data-index="${pos}"]`);
                 if (!gameState.revealedPositions.includes(pos)) {
-                    bombBlock.classList.add('bomb');
-                    bombBlock.innerHTML = '💣';
+                    mineCell.classList.add('mine');
+                    mineCell.innerHTML = '💣';
                 }
             });
         }, 500);
     }
 
-    // Create star effect
-    function createStarEffect(element) {
-        const rect = element.getBoundingClientRect();
-        const centerX = rect.left + rect.width / 2;
-        const centerY = rect.top + rect.height / 2;
+    // Click random cell
+    function clickRandomCell() {
+        if (!gameState.gameActive) return;
         
-        for (let i = 0; i < 5; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            
-            // Random position around the center
-            const angle = Math.random() * Math.PI * 2;
-            const distance = Math.random() * 20;
-            const x = centerX + Math.cos(angle) * distance;
-            const y = centerY + Math.sin(angle) * distance;
-            
-            star.style.left = `${x}px`;
-            star.style.top = `${y}px`;
-            
-            document.body.appendChild(star);
-            
-            // Remove star after animation
-            setTimeout(() => {
-                star.remove();
-            }, 1000);
+        const unrevealedCells = Array.from(document.querySelectorAll('.cell'))
+            .filter(cell => 
+                !cell.classList.contains('revealed') && 
+                !cell.classList.contains('mine') &&
+                !gameState.revealedPositions.includes(parseInt(cell.dataset.index))
+            );
+        
+        if (unrevealedCells.length > 0) {
+            const randomIndex = Math.floor(Math.random() * unrevealedCells.length);
+            handleCellClick(unrevealedCells[randomIndex]);
+        }
+    }
+
+    // Start auto play
+    function startAutoPlay() {
+        stopAutoPlay();
+        gameState.autoPlayInterval = setInterval(() => {
+            if (gameState.gameActive) {
+                clickRandomCell();
+            } else {
+                stopAutoPlay();
+            }
+        }, 1000);
+    }
+
+    // Stop auto play
+    function stopAutoPlay() {
+        if (gameState.autoPlayInterval) {
+            clearInterval(gameState.autoPlayInterval);
+            gameState.autoPlayInterval = null;
         }
     }
 
     // Update multiplier
     function updateMultiplier() {
-        const remainingDiamonds = gameState.gridSize - gameState.minesCount - gameState.revealedCount;
-        const riskFactor = gameState.minesCount / (gameState.gridSize - gameState.revealedCount);
-        gameState.multiplier += 0.25 * riskFactor;
+        const riskFactor = gameState.minesCount / (gameState.gridSize - gameState.revealedPositions.length);
+        gameState.multiplier += (0.2 + riskFactor * 0.3) * (1 + gameState.hits * 0.1);
     }
 
-    // Update UI
-    function updateUI() {
-        currentValueDisplay.textContent = `R$ ${(gameState.betAmount * gameState.multiplier).toFixed(2)}`;
-        diamondsRemainingDisplay.textContent = gameState.gridSize - gameState.minesCount - gameState.revealedCount;
-        minesRemainingDisplay.textContent = gameState.minesCount;
+    // Cash out
+    function cashOut() {
+        const winnings = gameState.betAmount * gameState.multiplier;
+        gameState.balance += winnings;
+        endGame(true);
     }
 
     // End game
     function endGame(won) {
         gameState.gameActive = false;
+        stopAutoPlay();
         
-        // Disable buttons
-        randomBtn.disabled = true;
-        cashoutBtn.disabled = true;
-        
-        // Show result modal
         if (won) {
-            modalTitle.textContent = 'Você ganhou!';
-            modalMessage.textContent = `Você sacou e ganhou R$ ${(gameState.betAmount * gameState.multiplier).toFixed(2)}!`;
+            const winnings = gameState.betAmount * gameState.multiplier;
+            showResult(`You won R$ ${winnings.toFixed(2)}!`, true);
         } else {
-            modalTitle.textContent = 'Game Over!';
-            modalMessage.textContent = 'Você acertou uma bomba e perdeu sua aposta.';
+            gameState.balance -= gameState.betAmount;
+            showResult(`You lost R$ ${gameState.betAmount}.`, false);
         }
         
-        resultModal.style.display = 'flex';
+        updateUI();
     }
 
-    // Random block click
-    function clickRandomBlock() {
-        if (!gameState.gameActive) return;
+    // Show result
+    function showResult(message, isWin) {
+        // In a real app, you might show a modal or notification here
+        console.log(message);
+        // For now, we'll just update the UI
+    }
+
+    // Update UI
+    function updateUI() {
+        playerBalance.textContent = gameState.balance.toFixed(2);
+        hitsCountDisplay.textContent = gameState.hits;
+        minesCountDisplay.textContent = gameState.minesCount;
         
-        const unrevealedBlocks = Array.from(document.querySelectorAll('.block'))
-            .filter(block => 
-                !block.classList.contains('revealed') && 
-                !block.classList.contains('bomb') &&
-                !gameState.revealedPositions.includes(parseInt(block.dataset.index))
-            );
-        
-        if (unrevealedBlocks.length > 0) {
-            const randomIndex = Math.floor(Math.random() * unrevealedBlocks.length);
-            const event = { target: unrevealedBlocks[randomIndex] };
-            handleBlockClick(event);
+        if (gameState.gameActive && gameState.hits > 0) {
+            const cashoutAmount = gameState.betAmount * gameState.multiplier;
+            cashoutValue.textContent = `R$ ${cashoutAmount.toFixed(2)}`;
+            tooltip.textContent = `Current multiplier: ${gameState.multiplier.toFixed(2)}x`;
+            cashoutBtn.disabled = false;
+        } else {
+            cashoutValue.textContent = 'R$ 0';
+            cashoutBtn.disabled = true;
         }
     }
 
-    // Cash out
-    function cashOut() {
-        if (!gameState.gameActive) return;
-        endGame(true);
+    // Initialize game
+    initGame();
+
+    // Start first game
+    startGame();
+    // End game
+function endGame(won) {
+    gameState.gameActive = false;
+    stopAutoPlay();
+
+    if (won) {
+        const winnings = gameState.betAmount * gameState.multiplier;
+        showResult(`You won R$ ${winnings.toFixed(2)}!`, true);
+    } else {
+        gameState.balance -= gameState.betAmount;
+        showResult(`You lost R$ ${gameState.betAmount}.`, false);
     }
 
-    // Event listeners
-    randomBtn.addEventListener('click', clickRandomBlock);
-    cashoutBtn.addEventListener('click', cashOut);
-    modalBtn.addEventListener('click', function() {
-        resultModal.style.display = 'none';
-        startNewGame();
-    });
+    updateUI();
 
-    // Initialize
-    startNewGame();
+    // Auto-restart after short delay
+    setTimeout(() => {
+        startGame();
+    }, 1500);
+}
+
 });

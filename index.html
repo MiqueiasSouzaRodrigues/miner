@@ -4,20 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mines Game</title>
-    <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+    <link rel="stylesheet" href="style.css">k
 </head>
 <body>
     <div class="header">
-        <h1>Mines</h1>
-        <div class="balance">R$ <span id="player-balance">100.00</span></div>
+        <h1>MINES</h1>
+        <div class="balance"><span id="player-balance">3,001.55</span> USD</div>
     </div>
 
     <div class="game-container">
-        <div class="current-bet">
-            <div class="input-label">Current Bet</div>
-            <div id="bet-display">R$ 5</div>
+        <div style="text-align: center; margin-bottom: 15px;">
+            <div class="input-label">Como joga?</div>
+        </div>
+
+        <div style="text-align: center; margin-bottom: 15px;">
+            <div class="input-label">FUN MODE</div>
+        </div>
+
+        <div class="game-info">
+            <div class="info-item">
+                <span>Minas:</span>
+                <span id="mines-count-display">1</span>
+            </div>
+            <div class="info-item">
+                <span>Seguinte:</span>
+                <span id="next-multiplier">1.01x</span>
+            </div>
         </div>
 
         <div class="grid" id="game-grid">
@@ -26,54 +39,27 @@
 
         <div class="controls">
             <button class="btn btn-primary" id="random-btn">
-                <span>Random</span>
+                <span>ALEATÓRIO</span>
             </button>
-            <div class="tooltip">
-                <button class="btn btn-positive" id="cashout-btn">
-                    <span>Cash Out</span>
-                    <span id="cashout-value">R$ 0</span>
-                </button>
-                <span class="tooltiptext">Current multiplier: 1.00x</span>
-            </div>
-        </div>
-
-        <div class="auto-toggle">
-            <span>Auto Play:</span>
-            <label class="toggle-switch">
-                <input type="checkbox" id="auto-toggle">
-                <span class="slider"></span>
-            </label>
+            <button class="btn btn-positive" id="cashout-btn">
+                <span>Auto jogo</span>
+            </button>
         </div>
 
         <div class="input-group">
-            <label class="input-label">Bet Amount (R$)</label>
-            <input type="number" class="input-field" id="bet-amount" min="1" max="50" value="5" step="1">
-        </div>
-
-        <div class="input-group">
-            <label class="input-label">Number of Mines</label>
-            <select class="input-field" id="mines-count">
-                <option value="3">3 Mines</option>
-                <option value="4">4 Mines</option>
-                <option value="5">5 Mines</option>
-                <option value="6">6 Mines</option>
-                <option value="7">7 Mines</option>
-            </select>
-        </div>
-
-        <div class="game-info">
-            <div class="info-item">
-                <span>⭐ Hits:</span>
-                <span id="hits-count">0</span>
-            </div>
-            <div class="info-item">
-                <span>💣 Mines:</span>
-                <span id="mines-count-display">3</span>
+            <label class="input-label">Aposta USD</label>
+            <div class="bet-controls">
+                <button class="bet-button" id="decrease-bet">-</button>
+                <div class="bet-amount" id="bet-amount-display">0.80</div>
+                <button class="bet-button" id="increase-bet">+</button>
             </div>
         </div>
+
+        <button class="btn btn-positive" style="width: 100%;" id="start-game">
+            <span>APOSTA</span>
+        </button>
     </div>
 
-    <script src="script.js">
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>

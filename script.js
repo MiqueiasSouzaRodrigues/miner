@@ -1,17 +1,25 @@
 document.addEventListener('DOMContentLoaded', function() {
     // Game state
     const gameState = {
-        balance: 100.00,
-        betAmount: 5,
-        minesCount: 3,
+        balance: 3001.55,
+        betAmount: 0.80,
+        minesCount: 1,
         gridSize: 25,
         hits: 0,
         multiplier: 1.0,
+        nextMultiplier: 1.01,
         minesPositions: [],
         revealedPositions: [],
         gameActive: false,
-        autoPlay: false,
-        autoPlayInterval: null
+        autoPlay: false
+    };
+
+    // Multipliers based on mines count (from the Python code)
+    const multipliersConfig = {
+        1: [1.05, 1.15, 1.35],
+        5: [1.10, 1.30, 1.55],
+        10: [1.40, 1.90, 2.60],
+        20: [2.00, 4.00, 6.00]
     };
 
     // DOM elements
@@ -19,14 +27,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const playerBalance = document.getElementById('player-balance');
     const randomBtn = document.getElementById('random-btn');
     const cashoutBtn = document.getElementById('cashout-btn');
-    const cashoutValue = document.getElementById('cashout-value');
-    const betAmountInput = document.getElementById('bet-amount');
-    const minesCountSelect = document.getElementById('mines-count');
-    const betDisplay = document.getElementById('bet-display');
-    const hitsCountDisplay = document.getElementById('hits-count');
+    const betAmountDisplay = document.getElementById('bet-amount-display');
     const minesCountDisplay = document.getElementById('mines-count-display');
-    const autoToggle = document.getElementById('auto-toggle');
-    const tooltip = document.querySelector('.tooltiptext');
+    const nextMultiplierDisplay = document.getElementById('next-multiplier');
+    const startGameBtn = document.getElementById('start-game');
+    const decreaseBetBtn = document.getElementById('decrease-bet');
+    const increaseBetBtn = document.getElementById('increase-bet');
 
     // Initialize game
     function initGame() {
@@ -70,37 +76,37 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        // Bet amount input
-        betAmountInput.addEventListener('input', function() {
-            const value = parseInt(this.value);
-            if (value < 1) this.value = 1;
-            if (value > 50) this.value = 50;
-            gameState.betAmount = parseInt(this.value);
-            betDisplay.textContent = `R$ ${gameState.betAmount}`;
-        });
-
-        // Mines count select
-        minesCountSelect.addEventListener('change', function() {
-            gameState.minesCount = parseInt(this.value);
-            minesCountDisplay.textContent = gameState.minesCount;
-        });
-
-        // Auto play toggle
-        autoToggle.addEventListener('change', function() {
-            gameState.autoPlay = this.checked;
-            if (gameState.autoPlay && gameState.gameActive) {
-                startAutoPlay();
-            } else {
-                stopAutoPlay();
+        // Start game button
+        startGameBtn.addEventListener('click', function() {
+            if (!gameState.gameActive) {
+                startGame();
             }
+        });
+
+        // Bet amount controls
+        decreaseBetBtn.addEventListener('click', function() {
+            gameState.betAmount = Math.max(0.10, gameState.betAmount - 0.10);
+            updateUI();
+        });
+
+        increaseBetBtn.addEventListener('click', function() {
+            gameState.betAmount += 0.10;
+            updateUI();
         });
     }
 
     // Start new game
     function startGame() {
+        // Check if player has enough balance
+        if (gameState.balance < gameState.betAmount) {
+            alert("Saldo insuficiente!");
+            return;
+        }
+
         // Reset game state
         gameState.hits = 0;
         gameState.multiplier = 1.0;
+        gameState.nextMultiplier = 1.01;
         gameState.revealedPositions = [];
         gameState.gameActive = true;
         
@@ -116,11 +122,6 @@ document.addEventListener('DOMContentLoaded', function() {
         // Update UI
         updateUI();
         createGrid();
-        
-        // Start auto play if enabled
-        if (gameState.autoPlay) {
-            startAutoPlay();
-        }
     }
 
     // Handle cell click
@@ -138,11 +139,6 @@ document.addEventListener('DOMContentLoaded', function() {
             gameState.hits++;
             updateMultiplier();
             updateUI();
-            
-            // Continue auto play if enabled
-            if (gameState.autoPlay && gameState.gameActive) {
-                setTimeout(clickRandomCell, 800);
-            }
         }
     }
 
@@ -192,30 +188,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Start auto play
-    function startAutoPlay() {
-        stopAutoPlay();
-        gameState.autoPlayInterval = setInterval(() => {
-            if (gameState.gameActive) {
-                clickRandomCell();
-            } else {
-                stopAutoPlay();
-            }
-        }, 1000);
-    }
-
-    // Stop auto play
-    function stopAutoPlay() {
-        if (gameState.autoPlayInterval) {
-            clearInterval(gameState.autoPlayInterval);
-            gameState.autoPlayInterval = null;
-        }
-    }
-
     // Update multiplier
     function updateMultiplier() {
-        const riskFactor = gameState.minesCount / (gameState.gridSize - gameState.revealedPositions.length);
-        gameState.multiplier += (0.2 + riskFactor * 0.3) * (1 + gameState.hits * 0.1);
+        // Get the multipliers for the current mines count
+        const multipliers = multipliersConfig[gameState.minesCount] || [1.01, 1.02, 1.03];
+        
+        // Determine which multiplier to use based on hits
+        const multiplierIndex = Math.min(gameState.hits, multipliers.length - 1);
+        gameState.nextMultiplier = multipliers[multiplierIndex];
     }
 
     // Cash out
@@ -228,14 +208,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // End game
     function endGame(won) {
         gameState.gameActive = false;
-        stopAutoPlay();
         
         if (won) {
             const winnings = gameState.betAmount * gameState.multiplier;
-            showResult(`You won R$ ${winnings.toFixed(2)}!`, true);
+            showResult(`You won $${winnings.toFixed(2)}!`, true);
         } else {
             gameState.balance -= gameState.betAmount;
-            showResult(`You lost R$ ${gameState.betAmount}.`, false);
+            showResult(`You lost $${gameState.betAmount.toFixed(2)}.`, false);
         }
         
         updateUI();
@@ -251,44 +230,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update UI
     function updateUI() {
         playerBalance.textContent = gameState.balance.toFixed(2);
-        hitsCountDisplay.textContent = gameState.hits;
         minesCountDisplay.textContent = gameState.minesCount;
+        betAmountDisplay.textContent = gameState.betAmount.toFixed(2);
+        nextMultiplierDisplay.textContent = gameState.nextMultiplier.toFixed(2) + 'x';
         
-        if (gameState.gameActive && gameState.hits > 0) {
-            const cashoutAmount = gameState.betAmount * gameState.multiplier;
-            cashoutValue.textContent = `R$ ${cashoutAmount.toFixed(2)}`;
-            tooltip.textContent = `Current multiplier: ${gameState.multiplier.toFixed(2)}x`;
-            cashoutBtn.disabled = false;
+        if (gameState.gameActive) {
+            startGameBtn.textContent = 'CASHOUT';
+            startGameBtn.onclick = function() {
+                if (gameState.hits > 0) {
+                    cashOut();
+                }
+            };
         } else {
-            cashoutValue.textContent = 'R$ 0';
-            cashoutBtn.disabled = true;
+            startGameBtn.textContent = 'APOSTA';
+            startGameBtn.onclick = function() {
+                startGame();
+            };
         }
     }
 
     // Initialize game
     initGame();
-
-    // Start first game
-    startGame();
-    // End game
-function endGame(won) {
-    gameState.gameActive = false;
-    stopAutoPlay();
-
-    if (won) {
-        const winnings = gameState.betAmount * gameState.multiplier;
-        showResult(`You won R$ ${winnings.toFixed(2)}!`, true);
-    } else {
-        gameState.balance -= gameState.betAmount;
-        showResult(`You lost R$ ${gameState.betAmount}.`, false);
-    }
-
-    updateUI();
-
-    // Auto-restart after short delay
-    setTimeout(() => {
-        startGame();
-    }, 1500);
-}
-
 });

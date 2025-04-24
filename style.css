@@ -82,6 +82,11 @@ body {
     background-color: #00BB72;
 }
 
+.btn-danger {
+    background-color: var(--danger);
+    color: white;
+}
+
 .btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
@@ -105,6 +110,7 @@ body {
     cursor: pointer;
     user-select: none;
     transition: all 0.3s;
+    position: relative;
 }
 
 .cell:hover {
@@ -319,6 +325,49 @@ input:checked + .slider:before {
 
 .bet-button:hover {
     background-color: rgba(0, 0, 0, 0.5);
+}
+
+.mines-selector {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.mine-option {
+    flex: 1;
+    min-width: 40px;
+    padding: 10px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.mine-option.selected {
+    background-color: var(--highlight);
+    color: #000;
+    font-weight: 600;
+}
+
+.notification {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--highlight);
+    color: #000;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.notification.show {
+    opacity: 1;
 }
 
 @media (max-width: 400px) {
